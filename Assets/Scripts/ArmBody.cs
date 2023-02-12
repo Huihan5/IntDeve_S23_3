@@ -4,15 +4,41 @@ using UnityEngine;
 
 public class ArmBody : MonoBehaviour
 {
-    public Rigidbody2D armBody;
+    //Data
+
+    public Rigidbody2D leftBody;
+
+    public Rigidbody2D rightBody;
 
     Rigidbody2D mainBody;
 
     public float power = 2f;
 
+    public float score = 0;
+
+    //Sound Effect
+
     public AudioSource mySource;
 
     public AudioClip jumpClip;
+
+    //Text
+
+    public GameObject Instruction;
+
+    public GameObject Win;
+
+    public GameObject Lose;
+
+    //Phase
+
+    bool beforeGame = true;
+
+    bool inGame = false;
+
+    bool gameLose = false;
+
+    bool gameWin = false;
 
     // Start is called before the first frame update
     void Start()
@@ -23,31 +49,82 @@ public class ArmBody : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             mySource.clip = jumpClip;
             mySource.Play();
-            //armBody.AddForce(transform.up * power, ForceMode2D.Impulse);
             mySource.PlayOneShot(jumpClip);
         }
 
-        if (Input.GetKey(KeyCode.W))
+        //Before Game Interaction
+
+        if (beforeGame && Input.GetKeyDown(KeyCode.Q))
         {
-            mainBody.velocity = new Vector3(0, power, 0);
-        }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            mainBody.velocity = new Vector3(0, -power, 0);
+            Instruction.SetActive(false);
+            inGame = true;
         }
 
-        if (Input.GetKey(KeyCode.D))
+        //Body Interaction
+
+        if (inGame)
         {
-            mainBody.velocity = new Vector3(power, 0, 0);
+            //Uplifting Continuation
+
+            mainBody.velocity = new Vector3(0, power, 0);
+
+            if (Input.GetKey(KeyCode.Space))
+            {
+                mainBody.velocity = new Vector3(0, -power, 0);
+            }
+
+            if (Input.GetKey(KeyCode.D))
+            {
+                rightBody.AddForce(transform.up * power, ForceMode2D.Impulse);
+                mainBody.velocity = new Vector3(power, 0, 0);
+            }
+            else if (Input.GetKey(KeyCode.A))
+            {
+
+                leftBody.AddForce(transform.up * power, ForceMode2D.Impulse);
+                mainBody.velocity = new Vector3(-power, 0, 0);
+            }
+
+            if(score >= 3)
+            {
+                gameWin = true;
+            }
         }
-        else if (Input.GetKey(KeyCode.A))
+
+        //Wining Condition
+
+        if(gameLose)
         {
-            mainBody.velocity = new Vector3(-power, 0, 0);
+            inGame = false;
+            Lose.SetActive(true);
+        }
+        else if(gameWin)
+        {
+            inGame = false;
+            Win.SetActive(true);
         }
 
     }
+
+    private void OnCollisionEnter2D(Collision2D somecollision)
+    {
+        Debug.Log(somecollision.gameObject.name);
+
+        if (somecollision.gameObject.name == "Welkin")
+        {
+            gameLose = true;
+        }
+
+        if (somecollision.gameObject.name == "Star")
+        {
+            Destroy(somecollision.gameObject);
+            score++;
+        }
+
+    }
+
 }
