@@ -49,13 +49,6 @@ public class ArmBody : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            mySource.clip = jumpClip;
-            mySource.Play();
-            mySource.PlayOneShot(jumpClip);
-        }
-
         //Before Game Interaction
 
         if (beforeGame && Input.GetKeyDown(KeyCode.Q))
@@ -68,6 +61,15 @@ public class ArmBody : MonoBehaviour
 
         if (inGame)
         {
+            //Sound Effect
+
+            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D))
+            {
+                //mySource.clip = jumpClip;
+                //mySource.Play();
+                mySource.PlayOneShot(jumpClip);
+            }
+
             //Uplifting Continuation
 
             mainBody.velocity = new Vector3(0, power, 0);
